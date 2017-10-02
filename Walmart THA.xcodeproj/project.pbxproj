@@ -74,6 +74,7 @@
 		AA1507941F8303CD00D33AB6 /* RatingStarsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingStarsView.swift; sourceTree = "<group>"; };
 		AA1507951F8303CD00D33AB6 /* CGFloat_Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGFloat_Utils.swift; sourceTree = "<group>"; };
 		AA1507961F8303CD00D33AB6 /* RatingStarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingStarView.swift; sourceTree = "<group>"; };
+		AA15079D1F83072000D33AB6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AA8E80CD1F82EE280050E5C3 /* UIImageView_Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageView_Utils.swift; sourceTree = "<group>"; };
 		AA985B6F1F81E41500E7F9E0 /* CustomStringConvertible_Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomStringConvertible_Utils.swift; sourceTree = "<group>"; };
 		AA985B721F81EBE300E7F9E0 /* ProductItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductItem.swift; sourceTree = "<group>"; };
@@ -186,6 +187,7 @@
 		AA9D03801F81A4CC001434A2 = {
 			isa = PBXGroup;
 			children = (
+				AA15079D1F83072000D33AB6 /* README.md */,
 				AA9D038B1F81A4CC001434A2 /* Walmart THA */,
 				AA9D03A21F81A4CC001434A2 /* Walmart THATests */,
 				AA1507711F8302F900D33AB6 /* RatingStars */,
