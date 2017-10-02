@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="f8G-Ls-WVT">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="37s-6J-Txt">
+            <objects>
+                <viewController id="f8G-Ls-WVT" customClass="ViewController" customModule="RatingStars" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="goE-qV-NeE">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="100%" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9iY-83-eWb">
+                                <rect key="frame" x="16" y="626" width="343" height="21"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="31H-cw-ago" customClass="RatingStarView" customModule="RatingStars" customModuleProvider="target">
+                                <rect key="frame" x="37" y="100" width="300" height="300"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="300" id="Zfd-EP-WcT"/>
+                                    <constraint firstAttribute="width" constant="300" id="aMY-Zb-fbG"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" red="0.0" green="0.0" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="filledColor">
+                                        <color key="value" red="0.97647058819999999" green="0.94509803920000002" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zf3-Go-Txk" customClass="RatingStarsView" customModule="RatingStars" customModuleProvider="target">
+                                <rect key="frame" x="37" y="441" width="300" height="60"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="Iwx-gc-W3e"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="filledColor">
+                                        <color key="value" red="0.0" green="0.6588235294" blue="0.042588975690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="31H-cw-ago" firstAttribute="top" secondItem="jor-Hh-v7l" secondAttribute="top" constant="80" id="ABW-Vn-z5z"/>
+                            <constraint firstItem="Zf3-Go-Txk" firstAttribute="top" secondItem="31H-cw-ago" secondAttribute="bottom" constant="41" id="FzO-Hn-q0p"/>
+                            <constraint firstItem="Zf3-Go-Txk" firstAttribute="width" secondItem="31H-cw-ago" secondAttribute="width" id="LHD-sV-iFB"/>
+                            <constraint firstItem="31H-cw-ago" firstAttribute="centerX" secondItem="goE-qV-NeE" secondAttribute="centerX" id="WX3-bw-FSI"/>
+                            <constraint firstItem="Zf3-Go-Txk" firstAttribute="centerX" secondItem="goE-qV-NeE" secondAttribute="centerX" id="yNl-ZE-GSM"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="jor-Hh-v7l"/>
+                    </view>
+                    <connections>
+                        <outlet property="percentLabel" destination="9iY-83-eWb" id="cfp-K9-pa0"/>
+                        <outlet property="ratingStarView" destination="31H-cw-ago" id="KA4-et-jsj"/>
+                        <outlet property="ratingStarsView" destination="Zf3-Go-Txk" id="pAI-4q-Uap"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HDv-In-LAH" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="93.599999999999994" y="86.806596701649184"/>
+        </scene>
+    </scenes>
+</document>
