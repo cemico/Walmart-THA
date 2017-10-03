@@ -25,4 +25,16 @@ extension String {
 
         return self
     }
+
+    var ext: String {
+
+        let nsSelf = self as NSString
+        return nsSelf.pathExtension
+    }
+
+    func stringByAppendingPathComponent(path: String) -> String {
+
+        let nsSelf = self as NSString
+        return nsSelf.appendingPathComponent(path)
+    }
 }

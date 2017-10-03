@@ -53,6 +53,25 @@ class ProductDataController {
         return _products
     }
 
+    var isMoreDataAvailableToFetch: Bool {
+
+        var moreDataExists = true
+
+        // no need to fetch once we're at the total
+        if let lastProductsFetched = _lastProductsFetched {
+
+            // also checked if total isn't accurate by checking if return is less than requested
+            if products.count >= lastProductsFetched.totalProducts ||
+                lastProductsFetched.pageSize != lastProductsFetched.products.count {
+
+                // no new products
+                moreDataExists = false
+            }
+        }
+
+        return moreDataExists
+    }
+
     ///////////////////////////////////////////////////////////
     // api
     ///////////////////////////////////////////////////////////
@@ -61,7 +80,7 @@ class ProductDataController {
 
         // thread-safe operation
         // note: another common way to control access is to use custom serial queue
-        NSLock().synchronized {
+        NSLock().synchronized { [unowned self] in
 
             // clear cached items
             self._products = []
@@ -72,16 +91,11 @@ class ProductDataController {
     func getPartialProductList(completionHandler: @escaping ((Error?, [ProductItem]) -> Void)) {
 
         // no need to fetch once we're at the total
-        if let lastProductsFetched = _lastProductsFetched {
+        guard isMoreDataAvailableToFetch else {
 
-            // also checked if total isn't accurate by checking if return is less than requested
-            if products.count >= lastProductsFetched.totalProducts ||
-                lastProductsFetched.pageSize != lastProductsFetched.products.count {
-
-                // no new products
-                completionHandler(nil, [])
-                return
-            }
+            // no new products
+            completionHandler(nil, [])
+            return
         }
 
         // pickup where we last left off
@@ -124,7 +138,7 @@ class ProductDataController {
                 if success {
 
                     // save last fetched, totalProducts field comes in handy later
-                    NSLock().synchronized {
+                    NSLock().synchronized { [unowned self] in
 
                         self._lastProductsFetched = productsFetched
                     }
@@ -161,7 +175,7 @@ class ProductDataController {
             // append new products on running products
             if returnError == nil && newProducts.count > 0 {
 
-                NSLock().synchronized {
+                NSLock().synchronized { [unowned self] in
 
                     self._products.append(contentsOf: newProducts)
                 }

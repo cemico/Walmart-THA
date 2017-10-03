@@ -18,7 +18,7 @@ class AppDataController {
     // setup singleton
     static let shared = AppDataController()
 
-    // local store for images
+    // local memory store for images
     private var imageCache: [String : UIImage] = [:]
 
     ///////////////////////////////////////////////////////////
@@ -36,24 +36,38 @@ class AppDataController {
 
     func loadCache() {
 
-        // loads any cache items
+        // loads any cache items - on demand caching of memory items
+        CacheManager.shared.load()
     }
 
     func clearCache() {
 
         // clear cache from disc and memory
-        NSLock().synchronized {
+        NSLock().synchronized { [unowned self] in
 
+            // memory
             self.imageCache.removeAll()
+
+            // file
+            CacheManager.shared.clear()
         }
     }
 
     func loadImage(url: String, completionHandler: @escaping ((UIImage?) -> Void))  {
 
-        // check cache
+        // check memory cache
         if let image = imageCache[url] {
 
             // valid image
+            completionHandler(image)
+            return
+        }
+
+        // check file cache (on demand load)
+        if let image = CacheManager.shared.loadImage(url: url) {
+
+            // save in memory
+            imageCache[url] = image
             completionHandler(image)
             return
         }
@@ -70,8 +84,14 @@ class AppDataController {
                 let image = UIImage(data: data)
                 completionHandler(image)
 
-                // save in cache
+                // save in memory cache
                 self.imageCache[url] = image
+
+                // save in file cache
+                if let image = image {
+
+                    CacheManager.shared.saveImage(url: url, image: image)
+                }
                 return
             }
 

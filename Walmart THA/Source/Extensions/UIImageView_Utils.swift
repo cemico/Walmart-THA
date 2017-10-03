@@ -27,19 +27,22 @@ extension UIImageView {
 
             DispatchQueue.main.async { [weak self] in
 
+                // nothing to udpate if we've been released
+                guard let strongSelf = self else { return }
+
                 // update mode
-                self?.contentMode = contentMode
+                strongSelf.contentMode = contentMode
 
                 if let image = image {
 
                     // update self with new image
-                    self?.image = image
+                    strongSelf.image = image
                 }
                 else {
 
                     // perhaps standard image load failed image
                     // for now - clear placeholder
-                    self?.image = nil // UIImage.init(name: "imageLoadFailed")
+                    strongSelf.image = nil // UIImage.init(name: "imageLoadFailed")
                 }
             }
         }

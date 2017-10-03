@@ -1,5 +1,7 @@
 # Walmart-THA
 
+server docs: https://walmartlabs-test.appspot.com/
+
 Walmart Mobile Engineering app assignment:
 - Create a new application with WalmartLabs Code Test API integrated. The application should have two screens.
 - We’ll be looking at your coding style, use of data structures, collections, and overall Platform SDK knowledge.
@@ -14,3 +16,10 @@ Screen 2:
 - Second screen should display details of the product.
 BONUS: Ability to swipe to view next/previous item ( Eg: Gmail App)
 BONUS: Universal app that works on both iPad and iPhone.
+
+
+Observations 10/1/2017 (assuming all these are part of the test)
+- server docs are misleading, talks of pageNumber / pageSize when in fact it is really recordNumber / pageSize (count)
+- server data is inaccurate, displays 224 items, only 223 are returned
+- server data is incomplete, some records do not have a shorDescription and longDescription
+- server data has extra fields in it now shown on docs page
