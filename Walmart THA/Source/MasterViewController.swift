@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MasterViewController: UITableViewController {
+class MasterViewController: UITableViewController, UISearchResultsUpdating {
 
     private struct Constants {
 
@@ -20,17 +20,36 @@ class MasterViewController: UITableViewController {
         static let preCellThresholdToFetchMore = 5
     }
 
-    var detailViewController: DetailViewController? = nil
+    // details pane
+    private var detailViewController: DetailViewController? = nil
 
-    var isCellHidden = true
-    
+    // initial animation flag
+    private var isCellHidden = true
+
+    // search bar filtered data
+    private var filteredData: [ProductItem] = []
+
+    // setup search search controller
+    private lazy var searchController: UISearchController = {
+
+        let sc = UISearchController(searchResultsController: nil)
+        sc.searchResultsUpdater = self
+        sc.dimsBackgroundDuringPresentation = false
+        sc.definesPresentationContext = true
+        return sc
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        navigationItem.leftBarButtonItem = editButtonItem
 
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
-        navigationItem.rightBarButtonItem = addButton
+        // grab inital data
+        fetchMoreResults()
+
+//        // Do any additional setup after loading the view, typically from a nib.
+//        navigationItem.leftBarButtonItem = editButtonItem
+//
+//        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
+//        navigationItem.rightBarButtonItem = addButton
 
         // extract details controller
         if let split = splitViewController {
@@ -38,6 +57,10 @@ class MasterViewController: UITableViewController {
             let controllers = split.viewControllers
             detailViewController = (controllers.last as! UINavigationController).topViewController as? DetailViewController
         }
+
+        // setup search bar
+        // note: didn't complete, mostly works ... commented out
+//        self.tableView.tableHeaderView = searchController.searchBar
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -47,9 +70,35 @@ class MasterViewController: UITableViewController {
         super.viewWillAppear(animated)
     }
 
-    @objc func insertNewObject(_ sender: Any) {
+    var isSearchBarEmpty: Bool {
 
-        fetchMoreResults()
+        if let text = searchController.searchBar.text, text.count > 0 {
+
+            return false
+        }
+
+        return true
+    }
+
+    func updateSearchResults(for searchController: UISearchController) {
+
+        guard !isSearchBarEmpty else {
+
+            // reset
+            filteredData = ProductDataController.shared.products
+            self.tableView.reloadData()
+            return
+        }
+
+        // get search text
+        guard let searchText = searchController.searchBar.text?.lowercased() else { return }
+
+        // apply filter
+//        let namePredicate = NSPredicate(format: "name like %@", searchText)
+        filteredData = ProductDataController.shared.products.filter({ $0.name.lowercased().contains(searchText) })
+
+        // refresh
+        self.tableView.reloadData()
     }
 
     func scrollUpAfterFetch() {
@@ -96,7 +145,6 @@ class MasterViewController: UITableViewController {
 
         // visual indicator
         self.navigationItem.title = "Products (loading...)"
-        self.tableView.isScrollEnabled = false
 
         // get first batch, higher priority background queue
         DispatchQueue.global(qos: .userInitiated).async {
@@ -112,6 +160,9 @@ class MasterViewController: UITableViewController {
                     DispatchQueue.main.async { [weak self] in
 
                         guard let strongSelf = self else { return }
+
+                        // udpate data
+                        strongSelf.filteredData = ProductDataController.shared.products
 
                         if isFirstFetch {
 
@@ -164,7 +215,7 @@ class MasterViewController: UITableViewController {
             if let indexPath = tableView.indexPathForSelectedRow {
 
                 // model data
-                let productItem = ProductDataController.shared.products[indexPath.row]
+                let productItem = filteredData[indexPath.row]
 
                 // destination controller
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
@@ -176,6 +227,12 @@ class MasterViewController: UITableViewController {
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
+
+            if searchController.isActive {
+
+                // auto-close search if open
+                searchController.isActive = false
+            }
         }
     }
 
@@ -183,7 +240,7 @@ class MasterViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        return ProductDataController.shared.products.count
+        return filteredData.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -194,7 +251,7 @@ class MasterViewController: UITableViewController {
         if let cell = cell as? ProductItemTableViewCell {
 
             // grab model for this row
-            let productItem = ProductDataController.shared.products[indexPath.row]
+            let productItem = filteredData[indexPath.row]
 
             // setup
             cell.configure(row: indexPath.row, model: productItem)
