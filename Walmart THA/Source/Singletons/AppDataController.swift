@@ -37,7 +37,7 @@ class AppDataController {
     func loadCache() {
 
         // loads any cache items - on demand caching of memory items
-        CacheManager.shared.load()
+        CacheManager.shared.loadAll()
     }
 
     func clearCache() {
@@ -48,8 +48,10 @@ class AppDataController {
             // memory
             self.imageCache.removeAll()
 
+            // decided to keep products cache only on file, i.e. no memory
+
             // file
-            CacheManager.shared.clear()
+            CacheManager.shared.clearAll()
         }
     }
 

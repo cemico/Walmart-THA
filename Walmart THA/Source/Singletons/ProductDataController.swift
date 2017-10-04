@@ -105,6 +105,16 @@ class ProductDataController {
 
         // pickup where we last left off
         let pageNumber = 1 + products.count
+        let pageNumberString = "\(pageNumber)"
+
+        // check file cache (on demand load)
+        if let productsFetch = CacheManager.shared.loadProductsFetch(pageNumber: pageNumberString) {
+
+            // results cached - save
+            addNewProducts(products: productsFetch.products)
+            completionHandler(nil, productsFetch.products)
+            return
+        }
 
         // single thread access
         var isDupRequest = false
@@ -176,6 +186,9 @@ class ProductDataController {
                         self._lastProductsFetched = productsFetched
                     }
 
+                    // save in file cache
+                    _ = CacheManager.shared.saveProductsFetch(pageNumber: pageNumberString, productsFetch: productsFetched)
+
                     // debugging loop to check duplicates (versus direct assignment)
                     for productItem in productsFetched.products {
 
@@ -206,16 +219,23 @@ class ProductDataController {
             }
 
             // append new products on running products
-            if returnError == nil && newProducts.count > 0 {
+            if returnError == nil {
 
-                NSLock().synchronized { [unowned self] in
-
-                    self._products.append(contentsOf: newProducts)
-                }
+                self.addNewProducts(products: newProducts)
             }
 
             // inform caller
             completionHandler(returnError, newProducts)
+        }
+    }
+
+    private func addNewProducts(products: [ProductItem]) {
+
+        guard products.count > 0 else { return }
+
+        NSLock().synchronized { [unowned self] in
+
+            self._products.append(contentsOf: products)
         }
     }
 }

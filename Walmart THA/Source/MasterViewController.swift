@@ -22,7 +22,8 @@ class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
 
-
+    var isCellHidden = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -95,9 +96,10 @@ class MasterViewController: UITableViewController {
 
         // visual indicator
         self.navigationItem.title = "Products (loading...)"
+        self.tableView.isScrollEnabled = false
 
-        // get first batch
-        DispatchQueue.global().async {
+        // get first batch, higher priority background queue
+        DispatchQueue.global(qos: .userInitiated).async {
 
             // animate first results set
             let isFirstFetch = (ProductDataController.shared.products.count == 0)
@@ -114,7 +116,12 @@ class MasterViewController: UITableViewController {
                         if isFirstFetch {
 
                             // cool factor, how about animating in first set of items
-                            strongSelf.tableView.reloadData(with: .fromBottom)
+                            strongSelf.tableView.reloadData(with: .fromBottom) {
+
+                                // to prevent flicker of visible cells before animation, hide them until
+                                // until animation moves them offscreen in prep to animate back in place
+                                strongSelf.isCellHidden = false
+                            }
                         }
                         else {
 
@@ -183,6 +190,7 @@ class MasterViewController: UITableViewController {
 
         let cell = tableView.dequeueReusableCell(withIdentifier: ProductItemTableViewCell.className, for: indexPath)
 
+        cell.isHidden = isCellHidden
         if let cell = cell as? ProductItemTableViewCell {
 
             // grab model for this row

@@ -198,7 +198,7 @@ class FullDetailsTableViewCell: UITableViewCell {
                 // allow for up to 2 lines of text, shifting all text below
 //                let height = productName.attributedText!.height(withConstrainedWidth: productName.frame.size.width)
                 let height = productName.text!.height(withConstrainedWidth: productName.frame.size.width, font: productName.font)
-                productNameHeightConstraint.constant = min(2 * productNameHeightConstraint.constant, height)
+                productNameHeightConstraint.constant = min(2 * productNameHeightConstraint.constant, height + 2)
             }
         }
     }

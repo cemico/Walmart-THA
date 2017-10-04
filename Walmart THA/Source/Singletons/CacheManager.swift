@@ -17,7 +17,8 @@ class CacheManager {
 
     private struct Constants {
 
-        static let imageFilenamePrefix  = "image"
+        static let imageFilenamePrefix   = "image"
+        static let productsFetchedFilenamePrefix = "productFetched"
     }
 
     ///////////////////////////////////////////////////////////
@@ -27,8 +28,9 @@ class CacheManager {
     // setup singleton
     static let shared = CacheManager()
 
-    // image map to file cache
+    // image maps to file cache
     private var imageMap: [String : Any] = [:]
+    private var productsFetchedMap: [String : Any] = [:]
 
     ///////////////////////////////////////////////////////////
     // lifecycle
@@ -43,23 +45,40 @@ class CacheManager {
     // api - map level
     ///////////////////////////////////////////////////////////
 
-    func clear() {
+    func clearImages() {
 
         NSLock().synchronized { [unowned self] in
 
             // clear local and file copies
             self.imageMap = [:]
-            _ = self.save()
+            _ = self.saveImages()
         }
     }
 
-    func load() {
+    func clearProducts() {
+
+        NSLock().synchronized { [unowned self] in
+
+            // clear local and file copies
+            self.productsFetchedMap = [:]
+            _ = self.saveProducts()
+        }
+    }
+
+    func clearAll() {
+
+        clearImages()
+        clearProducts()
+    }
+
+    func loadAll() {
 
         // file-based load
         imageMap = FileManager.default.readFile(fileType: .images)
+        productsFetchedMap = FileManager.default.readFile(fileType: .products)
     }
 
-    func save() -> Bool {
+    func saveImages() -> Bool {
 
         // file-based save
         let success = FileManager.default.writeFile(fileType: .images, dict: imageMap)
@@ -67,8 +86,24 @@ class CacheManager {
         return success
     }
 
+    func saveProducts() -> Bool {
+
+        // file-based save
+        let success = FileManager.default.writeFile(fileType: .products, dict: productsFetchedMap)
+        print("Products Fetched cache updated: \(success), \(productsFetchedMap.count) items")
+        return success
+    }
+
+    func saveAll() -> Bool {
+
+        // file-based save
+        let successImages = saveImages()
+        let successFetched = saveProducts()
+        return successImages && successFetched
+    }
+
     ///////////////////////////////////////////////////////////
-    // api - item level
+    // api - image item level
     ///////////////////////////////////////////////////////////
 
     func clearImage(url: String) {
@@ -80,7 +115,7 @@ class CacheManager {
         imageMap[url] = nil
 
         // save new map
-        if save() {
+        if saveImages() {
 
             // clear old filename
             _ = FileManager.default.deleteImage(filename: filename)
@@ -113,7 +148,57 @@ class CacheManager {
             imageMap[url] = filename
 
             // save map
-            _ = save()
+            _ = saveImages()
+        }
+    }
+
+    ///////////////////////////////////////////////////////////
+    // api - product item level
+    ///////////////////////////////////////////////////////////
+
+    func clearProductsFetch(pageNumber: String) {
+
+        // check if exists
+        guard let filename = productsFetchedMap[pageNumber] as? String else { return }
+
+        // clear
+        productsFetchedMap[pageNumber] = nil
+
+        // save new map
+        if saveProducts() {
+
+            // clear old filename
+            _ = FileManager.default.deleteProductsFetch(filename: filename)
+        }
+    }
+
+    func loadProductsFetch(pageNumber: String) -> ProductsFetch? {
+
+        // translate url into file's filename
+        guard let filename = productsFetchedMap[pageNumber] as? String else { return nil }
+
+        // load
+        return FileManager.default.loadProductsFetch(filename: filename)
+    }
+
+    func saveProductsFetch(pageNumber: String, productsFetch: ProductsFetch) {
+
+        // check if already exists
+        guard productsFetchedMap[pageNumber] == nil else { return }
+
+        // update
+        let prefix = Constants.productsFetchedFilenamePrefix
+        let fileID = pageNumber
+        let ext = "plist"
+        let filename = "\(prefix)-\(fileID).\(ext)"
+
+        if FileManager.default.saveProductsFetch(filename: filename, productsFetch: productsFetch) {
+
+            // successfully saved - update cache map
+            productsFetchedMap[pageNumber] = filename
+
+            // save map
+            _ = saveProducts()
         }
     }
 }

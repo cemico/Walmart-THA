@@ -15,7 +15,7 @@ extension UITableView {
         case fromBottom
     }
 
-    func reloadData(with springRoot: ReloadSpringRootDirection) {
+    func reloadData(with springRoot: ReloadSpringRootDirection, completionHandler: @escaping (() -> Void)) {
 
         struct Constants {
 
@@ -35,20 +35,23 @@ extension UITableView {
 
         // grab visible cells
         let cells = self.visibleCells
+        cells.forEach({ $0.isHidden = true })
+
         var cellOffset: CGFloat
         var transform: CGAffineTransform
 
         switch springRoot {
 
-        case .fromBottom:
-            cellOffset = self.bounds.size.height
-            transform = CGAffineTransform(translationX: 0, y: cellOffset)
+            case .fromBottom:
+                cellOffset = self.bounds.size.height
+                transform = CGAffineTransform(translationX: 0, y: cellOffset)
         }
 
         // move to offset
         for cell in cells {
 
             cell.transform = transform
+            cell.isHidden = false
         }
 
         // put back in place
@@ -64,7 +67,14 @@ extension UITableView {
                             // restore position
                             cell.transform = CGAffineTransform(translationX: 0, y: 0);
 
-            }, completion: nil)
+            }, completion: { success in
+
+                // check for last animation
+                if index == cells.count - 1 {
+
+                    completionHandler()
+                }
+            })
         }
     }
 }

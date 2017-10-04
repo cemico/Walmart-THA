@@ -22,6 +22,11 @@ extension String {
         return String(describing: type(of: ofSelf))
     }
 
+    static func from(any: Any, default value: String = "") -> String {
+
+        return any as? String ?? value
+    }
+
     var asUrlEncoded: String {
 
         let allowedCharacterSet = CharacterSet(charactersIn: "!*'();:@&=+$,/?%#[] ").inverted

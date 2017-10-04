@@ -125,7 +125,7 @@ extension FileManager {
     }
 
     ///////////////////////////////////////////////////////////
-    // API - item level
+    // API - image item level
     ///////////////////////////////////////////////////////////
 
     func loadImage(filename: String) -> UIImage? {
@@ -147,7 +147,7 @@ extension FileManager {
         let ext = filename.ext
         guard SupportedImageTypes.isSupportedImageType(ext: ext) else { return false }
 
-        // get image data
+        // get data
         var data: Data?
         if SupportedImageTypes.isJPG(ext: ext) {
 
@@ -169,6 +169,34 @@ extension FileManager {
     func deleteImage(filename: String) -> Bool {
 
         return deleteFileItem(filename: filename, in: .image)
+    }
+
+    ///////////////////////////////////////////////////////////
+    // API - product archive item level
+    ///////////////////////////////////////////////////////////
+
+    func loadProductsFetch(filename: String) -> ProductsFetch? {
+
+        // construct sandbox file path
+        guard let filepath = fullPath(for: filename, in: .products) else { return nil }
+
+        // load
+        let productsFetch = ProductsFetch.create(contentsOfFile: filepath)
+        return productsFetch
+    }
+
+    func saveProductsFetch(filename: String, productsFetch: ProductsFetch) -> Bool {
+
+        // construct sandbox file path
+        guard let filepath = fullPath(for: filename, in: .products) else { return false }
+
+        // save
+        return productsFetch.save(toFile: filepath)
+    }
+
+    func deleteProductsFetch(filename: String) -> Bool {
+
+        return deleteFileItem(filename: filename, in: .products)
     }
 
     ///////////////////////////////////////////////////////////
