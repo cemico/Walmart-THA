@@ -268,8 +268,6 @@
 				AA985B711F81EBA600E7F9E0 /* Models */,
 				AA9D03EE1F81CB78001434A2 /* Singletons */,
 				AA9D038C1F81A4CC001434A2 /* AppDelegate.swift */,
-				AA9D038E1F81A4CC001434A2 /* MasterViewController.swift */,
-				AA9D03901F81A4CC001434A2 /* DetailViewController.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -310,7 +308,9 @@
 		AABA6FB91F84CB750047958D /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				AA9D03901F81A4CC001434A2 /* DetailViewController.swift */,
 				AABA6FBA1F84CB970047958D /* LongDescriptionViewController.swift */,
+				AA9D038E1F81A4CC001434A2 /* MasterViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";

@@ -6,9 +6,14 @@
 //  Copyright © 2017 Cemico. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
 class MasterViewController: UITableViewController, UISearchResultsUpdating {
+
+    ///////////////////////////////////////////////////////////
+    // constants
+    ///////////////////////////////////////////////////////////
 
     private struct Constants {
 
@@ -20,8 +25,22 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
         static let preCellThresholdToFetchMore = 5
     }
 
+    ///////////////////////////////////////////////////////////
+    // outlets
+    ///////////////////////////////////////////////////////////
+
+    @IBOutlet var loadingView: UIView!
+    @IBOutlet weak var loadingSpinner: UIActivityIndicatorView!
+
+    ///////////////////////////////////////////////////////////
+    // data members
+    ///////////////////////////////////////////////////////////
+
     // details pane
     private var detailViewController: DetailViewController? = nil
+
+    // loading indicator
+    private var isLoadingData = false
 
     // initial animation flag
     private var isCellHidden = true
@@ -38,6 +57,10 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
         sc.definesPresentationContext = true
         return sc
     }()
+
+    ///////////////////////////////////////////////////////////
+    // overrides
+    ///////////////////////////////////////////////////////////
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,141 +93,12 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
         super.viewWillAppear(animated)
     }
 
-    var isSearchBarEmpty: Bool {
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
 
-        if let text = searchController.searchBar.text, text.count > 0 {
-
-            return false
-        }
-
-        return true
+        // keep the loading view in sync
+//        updateLoadingPosition()
     }
-
-    func updateSearchResults(for searchController: UISearchController) {
-
-        guard !isSearchBarEmpty else {
-
-            // reset
-            filteredData = ProductDataController.shared.products
-            self.tableView.reloadData()
-            return
-        }
-
-        // get search text
-        guard let searchText = searchController.searchBar.text?.lowercased() else { return }
-
-        // apply filter
-//        let namePredicate = NSPredicate(format: "name like %@", searchText)
-        filteredData = ProductDataController.shared.products.filter({ $0.name.lowercased().contains(searchText) })
-
-        // refresh
-        self.tableView.reloadData()
-    }
-
-    func scrollUpAfterFetch() {
-
-        // pop scroll to show more data
-        // note: needs some tlc, minor item, easy to remove, revisit when major items are complete
-        let visibleCellIndexPaths = self.tableView.indexPathsForVisibleRows
-        guard let lastCellIndexPath = visibleCellIndexPaths?.last else { return }
-        print("last cell: \(lastCellIndexPath.row)")
-
-        guard lastCellIndexPath.row < ProductDataController.shared.products.count - 1 else { return }
-        let scrollIndexPath = IndexPath.init(row: lastCellIndexPath.row + 1, section: 0)
-
-        // mild spring
-        UIView.animate(withDuration: 2.0, delay: 0, usingSpringWithDamping: 0.35, initialSpringVelocity: 0.1, options: [.curveEaseOut], animations: {
-
-            // auto-scroll to new data row
-            self.tableView.scrollToRow(at: scrollIndexPath, at: .none, animated: false)
-
-        }, completion: { success in
-
-        })
-    }
-
-    func prefetchCheckFrom(indexPath: IndexPath) {
-
-        // see if getting close to end of data, adjust for zero-base
-        let numberOfProducts = max(0, ProductDataController.shared.products.count - 1)
-        let numberOfRowsBeforeEnd = numberOfProducts - indexPath.row
-        let shouldFetchMore = (numberOfRowsBeforeEnd <= Constants.preCellThresholdToFetchMore)
-
-        if shouldFetchMore {
-
-            // initiate early fetch
-            print("fetching request from row: \(indexPath.row) of \(numberOfProducts) products")
-            fetchMoreResults()
-        }
-    }
-
-    func fetchMoreResults() {
-
-        // check if more results available to fetch
-        guard ProductDataController.shared.isMoreDataAvailableToFetch else { return }
-
-        // visual indicator
-        self.navigationItem.title = "Products (loading...)"
-
-        // get first batch, higher priority background queue
-        DispatchQueue.global(qos: .userInitiated).async {
-
-            // animate first results set
-            let isFirstFetch = (ProductDataController.shared.products.count == 0)
-
-            // fetch more objects
-            ProductDataController.shared.getPartialProductList { (error: Error?, products: [ProductItem]) in
-
-                if error == nil, !products.isEmpty {
-
-                    DispatchQueue.main.async { [weak self] in
-
-                        guard let strongSelf = self else { return }
-
-                        // udpate data
-                        strongSelf.filteredData = ProductDataController.shared.products
-
-                        if isFirstFetch {
-
-                            // cool factor, how about animating in first set of items
-                            strongSelf.tableView.reloadData(with: .fromBottom) {
-
-                                // to prevent flicker of visible cells before animation, hide them until
-                                // until animation moves them offscreen in prep to animate back in place
-                                strongSelf.isCellHidden = false
-                            }
-                        }
-                        else {
-
-//                            // animate the additions
-//                            let beginningIndex = max(0, ProductDataController.shared.products.count - products.count - 1)
-//                            strongSelf.tableView.beginUpdates()
-//                            for (index, _) in products.enumerated() {
-//
-//                                let indexPath = IndexPath.init(row: index + beginningIndex, section: 0)
-//                                strongSelf.tableView.insertRows(at: [indexPath], with: .left)
-//                            }
-//                            strongSelf.tableView.endUpdates()
-
-                            // new rows are not visible, no need to animate
-                            strongSelf.tableView.reloadData()
-
-//                            // playing around with feedback animation
-//                            strongSelf.scrollUpAfterFetch()
-                        }
-
-                        // visual feedback
-                        strongSelf.navigationItem.title = "Products (\(ProductDataController.shared.products.count))"
-
-                        // haptic feedback
-                        SoundManager.shared.hapticFeedback(type: .notification(.success))
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 
@@ -236,7 +130,219 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
         }
     }
 
+    ///////////////////////////////////////////////////////////
+    // helpers - loading view
+    ///////////////////////////////////////////////////////////
+
+    func updateLoadingPosition() {
+
+        let tableRect = self.tableView.frame
+        var loadingRect = loadingView.frame
+
+        loadingRect.origin.x = 0
+        loadingRect.size.width = tableRect.size.width
+
+        // keep the loading view in sync
+        if isLoadingData {
+
+            // shown at the bottom of the table
+            loadingRect.origin.y = tableRect.maxY - loadingRect.size.height
+        }
+        else {
+
+            // not shown, resides just below the table
+            loadingRect.origin.y = tableRect.maxY
+        }
+
+        if !loadingView.frame.equalTo(loadingRect) {
+
+            loadingView.frame = loadingRect
+            print(loadingRect)
+        }
+    }
+
+    func showLoading(show: Bool) {
+
+        // sanity check if already doing the action
+        guard isLoadingData != show else { return }
+
+        isLoadingData = show
+        view.bringSubview(toFront: loadingView)
+
+        // spinner control
+        if show {
+
+            loadingSpinner.startAnimating()
+        }
+        else {
+
+            loadingSpinner.stopAnimating()
+        }
+
+        UIView.animate(withDuration: 0.5, animations: {
+
+            // animate into position
+            self.updateLoadingPosition()
+
+        }) { success in
+
+        }
+    }
+
+    ///////////////////////////////////////////////////////////
+    // helpers - search bar
+    ///////////////////////////////////////////////////////////
+
+    var isSearchBarEmpty: Bool {
+
+        if let text = searchController.searchBar.text, text.count > 0 {
+
+            return false
+        }
+
+        return true
+    }
+
+    func updateSearchResults(for searchController: UISearchController) {
+
+        guard !isSearchBarEmpty else {
+
+            // reset
+            filteredData = ProductDataController.shared.products
+            self.tableView.reloadData()
+            return
+        }
+
+        // get search text
+        guard let searchText = searchController.searchBar.text?.lowercased() else { return }
+
+        // apply filter
+//        let namePredicate = NSPredicate(format: "name like %@", searchText)
+        filteredData = ProductDataController.shared.products.filter({ $0.name.lowercased().contains(searchText) })
+
+        // refresh
+        self.tableView.reloadData()
+    }
+
+    ///////////////////////////////////////////////////////////
+    // helpers - data load
+    ///////////////////////////////////////////////////////////
+
+    func prefetchCheckFrom(indexPath: IndexPath) {
+
+        // see if getting close to end of data, adjust for zero-base
+        let numberOfProducts = max(0, ProductDataController.shared.products.count - 1)
+        let numberOfRowsBeforeEnd = numberOfProducts - indexPath.row
+        let shouldFetchMore = (numberOfRowsBeforeEnd <= Constants.preCellThresholdToFetchMore)
+
+        if shouldFetchMore {
+
+            // initiate early fetch
+            print("fetching request from row: \(indexPath.row) of \(numberOfProducts) products")
+            fetchMoreResults()
+        }
+    }
+
+    func fetchMoreResults() {
+
+        // check if more results available to fetch
+        guard ProductDataController.shared.isMoreDataAvailableToFetch else { return }
+
+        // visual indicator
+        self.navigationItem.title = "Loading More..."
+
+        // visual loading indicator
+//        showLoading(show: true)
+
+        // get first batch, higher priority background queue
+        DispatchQueue.global(qos: .userInitiated).async {
+
+            // animate first results set
+            let isFirstFetch = (ProductDataController.shared.products.count == 0)
+
+            // fetch more objects
+            ProductDataController.shared.getPartialProductList { (error: Error?, products: [ProductItem]) in
+
+                DispatchQueue.main.async { [weak self] in
+
+                    guard let strongSelf = self else { return }
+
+                    // done loading
+//                    strongSelf.showLoading(show: false)
+
+                    if error == nil, !products.isEmpty {
+
+                        // update data
+                        strongSelf.filteredData = ProductDataController.shared.products
+
+                        if isFirstFetch {
+
+                            // cool factor, how about animating in first set of items
+                            strongSelf.tableView.reloadData(with: .fromBottom) {
+
+                                // to prevent flicker of visible cells before animation, hide them until
+                                // until animation moves them offscreen in prep to animate back in place
+                                strongSelf.isCellHidden = false
+                            }
+                        }
+                        else {
+
+                            //                            // animate the additions
+                            //                            let beginningIndex = max(0, ProductDataController.shared.products.count - products.count - 1)
+                            //                            strongSelf.tableView.beginUpdates()
+                            //                            for (index, _) in products.enumerated() {
+                            //
+                            //                                let indexPath = IndexPath.init(row: index + beginningIndex, section: 0)
+                            //                                strongSelf.tableView.insertRows(at: [indexPath], with: .left)
+                            //                            }
+                            //                            strongSelf.tableView.endUpdates()
+
+                            // new rows are not visible, no need to animate
+                            strongSelf.tableView.reloadData()
+
+                            //                            // playing around with feedback animation
+                            //                            strongSelf.scrollUpAfterFetch()
+                        }
+                    }
+
+                    // visual feedback
+                    strongSelf.navigationItem.title = "Products (\(ProductDataController.shared.products.count))"
+
+                    // haptic feedback
+                    SoundManager.shared.hapticFeedback(type: .notification(.success))
+                }
+            }
+        }
+    }
+
+    func scrollUpAfterFetch() {
+
+        // pop scroll to show more data
+        // note: needs some tlc, minor item, easy to remove, revisit when major items are complete
+        let visibleCellIndexPaths = self.tableView.indexPathsForVisibleRows
+        guard let lastCellIndexPath = visibleCellIndexPaths?.last else { return }
+        print("last cell: \(lastCellIndexPath.row)")
+
+        guard lastCellIndexPath.row < ProductDataController.shared.products.count - 1 else { return }
+        let scrollIndexPath = IndexPath.init(row: lastCellIndexPath.row + 1, section: 0)
+
+        // mild spring
+        UIView.animate(withDuration: 2.0, delay: 0, usingSpringWithDamping: 0.35, initialSpringVelocity: 0.1, options: [.curveEaseOut], animations: {
+
+            // auto-scroll to new data row
+            self.tableView.scrollToRow(at: scrollIndexPath, at: .none, animated: false)
+
+        }, completion: { success in
+
+        })
+    }
+}
+
+extension MasterViewController {
+
+    ///////////////////////////////////////////////////////////
     // MARK: - Table View
+    ///////////////////////////////////////////////////////////
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 

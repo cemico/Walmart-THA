@@ -55,11 +55,6 @@ class DetailViewController: UIViewController {
         // model up vc
         vc.productItem = productItem
     }
-
-    ///////////////////////////////////////////////////////////
-    // helpers
-    ///////////////////////////////////////////////////////////
-
 }
 
 extension DetailViewController: UITableViewDataSource, UITableViewDelegate {
