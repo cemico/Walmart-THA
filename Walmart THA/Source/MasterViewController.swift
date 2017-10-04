@@ -186,11 +186,17 @@ class MasterViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: ProductItemTableViewCell.className, for: indexPath)
 
-        // get model data
-        let productItem = ProductDataController.shared.products[indexPath.row]
-        cell.textLabel!.text = "\(indexPath.row + 1): " + productItem.name
+        if let cell = cell as? ProductItemTableViewCell {
+
+            // one time setup
+            cell.configure(row: indexPath.row)
+
+            // model cell
+            let productItem = ProductDataController.shared.products[indexPath.row]
+            cell.productItem = productItem
+        }
 
         // check for pre-fetch
         prefetchCheckFrom(indexPath: indexPath)
@@ -199,3 +205,80 @@ class MasterViewController: UITableViewController {
     }
 }
 
+///////////////////////////////////////////////////////////
+// MARK: - Table Cells
+///////////////////////////////////////////////////////////
+
+class ProductItemTableViewCell: UITableViewCell {
+
+    ///////////////////////////////////////////////////////////
+    // outlets
+    ///////////////////////////////////////////////////////////
+
+    @IBOutlet weak var productImageView: UIImageView!
+    @IBOutlet weak var productName: UILabel!
+    @IBOutlet weak var productPrice: UILabel!
+    @IBOutlet weak var ratingStarsView: RatingStarsView!
+    @IBOutlet weak var numberRatingsLabel: UILabel!
+
+    ///////////////////////////////////////////////////////////
+    // properties
+    ///////////////////////////////////////////////////////////
+
+    var productItem: ProductItem? = nil {
+
+        didSet {
+
+            // update outlets
+            if let productItem = productItem {
+
+                productName.text = productItem.name.html2String.withoutUnicodeChars
+                productPrice.text = productItem.price
+                ratingStarsView.rankingFill = CGFloat(productItem.reviewRating)
+                numberRatingsLabel.text = "(\(productItem.reviewCount))"
+
+                // load image
+                let currentRow = productImageView.tag
+                AppDataController.shared.loadImage(url: productItem.imageUrl, completionHandler: { [weak self] image in
+
+                    DispatchQueue.main.async {
+
+                        if let strongSelf = self, strongSelf.productImageView.tag == currentRow {
+
+                            strongSelf.productImageView.image = image
+                        }
+                        else {
+
+                            print("Image update skipped due to row reuse")
+                        }
+                    }
+                })
+            }
+        }
+    }
+
+    ///////////////////////////////////////////////////////////
+    // overrides
+    ///////////////////////////////////////////////////////////
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        // get ready for reuse
+        productItem = nil
+    }
+
+    ///////////////////////////////////////////////////////////
+    // actions
+    ///////////////////////////////////////////////////////////
+
+    func configure(row: Int) {
+
+        // any one-time configuration outside of data model being set
+        productImageView.tag = row
+    }
+}

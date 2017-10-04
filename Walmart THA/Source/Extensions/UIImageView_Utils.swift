@@ -10,7 +10,12 @@ import UIKit
 
 extension UIImageView {
 
-    func loadImageFrom(url: String, contentMode: UIViewContentMode = .scaleAspectFit, placeholderAssetName: String? = nil) {
+    struct Constants {
+
+        static let placeholderImageName = "loading"
+    }
+
+    func loadImageFrom(url: String, contentMode: UIViewContentMode = .scaleAspectFit, placeholderAssetName: String? = Constants.placeholderImageName) {
 
         // check for placeholder
         if let placeHolder = placeholderAssetName,

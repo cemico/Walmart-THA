@@ -39,6 +39,9 @@
 		AABA6FAE1F83A5BB0047958D /* FileManager_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA6FAD1F83A5BB0047958D /* FileManager_Utils.swift */; };
 		AABA6FB31F8425F70047958D /* UserDefaults_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA6FB21F8425F70047958D /* UserDefaults_Utils.swift */; };
 		AABA6FB51F843F590047958D /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA6FB41F843F590047958D /* SoundManager.swift */; };
+		AABA6FB61F84902E0047958D /* RatingStarsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1507941F8303CD00D33AB6 /* RatingStarsView.swift */; };
+		AABA6FB71F8490320047958D /* RatingStarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1507961F8303CD00D33AB6 /* RatingStarView.swift */; };
+		AABA6FB81F8490650047958D /* CGFloat_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1507951F8303CD00D33AB6 /* CGFloat_Utils.swift */; };
 		AAFFC4391F81F1E9001CECF8 /* ProductsFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFFC4381F81F1E9001CECF8 /* ProductsFetch.swift */; };
 		AAFFC43B1F8209F0001CECF8 /* Bundle_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFFC43A1F8209F0001CECF8 /* Bundle_Utils.swift */; };
 		AAFFC43E1F820B91001CECF8 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFFC43D1F820B91001CECF8 /* Router.swift */; };
@@ -489,6 +492,7 @@
 				AA985B731F81EBE300E7F9E0 /* ProductItem.swift in Sources */,
 				AABA6FAC1F83A3AF0047958D /* CacheManager.swift in Sources */,
 				AA9D03F01F81CB94001434A2 /* AppDataController.swift in Sources */,
+				AABA6FB61F84902E0047958D /* RatingStarsView.swift in Sources */,
 				AA985B701F81E41500E7F9E0 /* CustomStringConvertible_Utils.swift in Sources */,
 				AA9D03911F81A4CC001434A2 /* DetailViewController.swift in Sources */,
 				AAFFC4391F81F1E9001CECF8 /* ProductsFetch.swift in Sources */,
@@ -496,11 +500,13 @@
 				AABA6FB51F843F590047958D /* SoundManager.swift in Sources */,
 				AAFFC43B1F8209F0001CECF8 /* Bundle_Utils.swift in Sources */,
 				AABA6FAE1F83A5BB0047958D /* FileManager_Utils.swift in Sources */,
+				AABA6FB71F8490320047958D /* RatingStarView.swift in Sources */,
 				AAFFC4421F82EA6E001CECF8 /* UITableView_Utils.swift in Sources */,
 				AA9D038F1F81A4CC001434A2 /* MasterViewController.swift in Sources */,
 				AA9D03F71F81D329001434A2 /* String_Utils.swift in Sources */,
 				AAFFC4401F823EDE001CECF8 /* URLSession_Utils.swift in Sources */,
 				AA9D03F91F81D483001434A2 /* NSObject_Utils.swift in Sources */,
+				AABA6FB81F8490650047958D /* CGFloat_Utils.swift in Sources */,
 				AA9D03FB1F81D665001434A2 /* NSLock_Utils.swift in Sources */,
 				AA8E80CE1F82EE280050E5C3 /* UIImageView_Utils.swift in Sources */,
 				AAFFC43E1F820B91001CECF8 /* Router.swift in Sources */,
