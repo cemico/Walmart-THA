@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension String {
 
@@ -46,7 +47,8 @@ extension String {
 
     var html2AttributedString: NSAttributedString? {
 
-        guard let data = data(using: String.Encoding.utf8) else { return nil }
+        let stripped = self.withoutUnicodeChars
+        guard let data = stripped.data(using: String.Encoding.utf8) else { return nil }
         do {
             let attributedString = try NSAttributedString(data: data,
                                                           options: [.documentType: NSAttributedString.DocumentType.html,
@@ -131,5 +133,13 @@ extension String {
         }
 
         return String(utf16chars: utf16array) ?? self
+    }
+
+    func height(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
+
+        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+
+        return ceil(boundingBox.height)
     }
 }

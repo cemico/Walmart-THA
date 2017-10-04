@@ -23,3 +23,4 @@ Observations 10/1/2017 (assuming all these are part of the test)
 - server data is inaccurate, displays 224 items, only 223 are returned
 - server data is incomplete, some records do not have a shorDescription and longDescription
 - server data has extra fields in it now shown on docs page
+- server data has embedded \u{ef} chars which do not print

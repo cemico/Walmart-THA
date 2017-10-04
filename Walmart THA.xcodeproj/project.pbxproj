@@ -42,6 +42,8 @@
 		AABA6FB61F84902E0047958D /* RatingStarsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1507941F8303CD00D33AB6 /* RatingStarsView.swift */; };
 		AABA6FB71F8490320047958D /* RatingStarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1507961F8303CD00D33AB6 /* RatingStarView.swift */; };
 		AABA6FB81F8490650047958D /* CGFloat_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1507951F8303CD00D33AB6 /* CGFloat_Utils.swift */; };
+		AABA6FBB1F84CB970047958D /* LongDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA6FBA1F84CB970047958D /* LongDescriptionViewController.swift */; };
+		AABA6FBD1F84EC050047958D /* NSAttributedString_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA6FBC1F84EC050047958D /* NSAttributedString_Utils.swift */; };
 		AAFFC4391F81F1E9001CECF8 /* ProductsFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFFC4381F81F1E9001CECF8 /* ProductsFetch.swift */; };
 		AAFFC43B1F8209F0001CECF8 /* Bundle_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFFC43A1F8209F0001CECF8 /* Bundle_Utils.swift */; };
 		AAFFC43E1F820B91001CECF8 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFFC43D1F820B91001CECF8 /* Router.swift */; };
@@ -105,6 +107,8 @@
 		AABA6FAD1F83A5BB0047958D /* FileManager_Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManager_Utils.swift; sourceTree = "<group>"; };
 		AABA6FB21F8425F70047958D /* UserDefaults_Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults_Utils.swift; sourceTree = "<group>"; };
 		AABA6FB41F843F590047958D /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		AABA6FBA1F84CB970047958D /* LongDescriptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongDescriptionViewController.swift; sourceTree = "<group>"; };
+		AABA6FBC1F84EC050047958D /* NSAttributedString_Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSAttributedString_Utils.swift; sourceTree = "<group>"; };
 		AAFFC4381F81F1E9001CECF8 /* ProductsFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsFetch.swift; sourceTree = "<group>"; };
 		AAFFC43A1F8209F0001CECF8 /* Bundle_Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle_Utils.swift; sourceTree = "<group>"; };
 		AAFFC43D1F820B91001CECF8 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
@@ -251,6 +255,7 @@
 			isa = PBXGroup;
 			children = (
 				AAFFC43C1F820B83001CECF8 /* API */,
+				AABA6FB91F84CB750047958D /* Controllers */,
 				AA9D03F51F81D31C001434A2 /* Extensions */,
 				AA985B711F81EBA600E7F9E0 /* Models */,
 				AA9D03EE1F81CB78001434A2 /* Singletons */,
@@ -278,6 +283,7 @@
 				AAFFC43A1F8209F0001CECF8 /* Bundle_Utils.swift */,
 				AA985B6F1F81E41500E7F9E0 /* CustomStringConvertible_Utils.swift */,
 				AABA6FAD1F83A5BB0047958D /* FileManager_Utils.swift */,
+				AABA6FBC1F84EC050047958D /* NSAttributedString_Utils.swift */,
 				AA9D03FA1F81D665001434A2 /* NSLock_Utils.swift */,
 				AA9D03F81F81D483001434A2 /* NSObject_Utils.swift */,
 				AA9D03F61F81D329001434A2 /* String_Utils.swift */,
@@ -287,6 +293,14 @@
 				AABA6FB21F8425F70047958D /* UserDefaults_Utils.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		AABA6FB91F84CB750047958D /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				AABA6FBA1F84CB970047958D /* LongDescriptionViewController.swift */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		AAFFC43C1F820B83001CECF8 /* API */ = {
@@ -496,6 +510,8 @@
 				AA985B701F81E41500E7F9E0 /* CustomStringConvertible_Utils.swift in Sources */,
 				AA9D03911F81A4CC001434A2 /* DetailViewController.swift in Sources */,
 				AAFFC4391F81F1E9001CECF8 /* ProductsFetch.swift in Sources */,
+				AABA6FBB1F84CB970047958D /* LongDescriptionViewController.swift in Sources */,
+				AABA6FBD1F84EC050047958D /* NSAttributedString_Utils.swift in Sources */,
 				AABA6FB31F8425F70047958D /* UserDefaults_Utils.swift in Sources */,
 				AABA6FB51F843F590047958D /* SoundManager.swift in Sources */,
 				AAFFC43B1F8209F0001CECF8 /* Bundle_Utils.swift in Sources */,

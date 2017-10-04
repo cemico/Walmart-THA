@@ -37,11 +37,6 @@ class MasterViewController: UITableViewController {
             let controllers = split.viewControllers
             detailViewController = (controllers.last as! UINavigationController).topViewController as? DetailViewController
         }
-
-        let rect = CGRect.init(x: 0, y: 0, width: tableView.frame.size.width, height: 1)
-        let label = UILabel.init(frame: rect)
-        label.backgroundColor = UIColor.blue
-        self.tableView.tableFooterView = label
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -168,7 +163,7 @@ class MasterViewController: UITableViewController {
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
 
                 // set model data
-                controller.detailItem = productItem
+                controller.productItem = productItem
 
                 // set nav buttons for when master pane is showing and not
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
@@ -190,12 +185,11 @@ class MasterViewController: UITableViewController {
 
         if let cell = cell as? ProductItemTableViewCell {
 
-            // one time setup
-            cell.configure(row: indexPath.row)
-
-            // model cell
+            // grab model for this row
             let productItem = ProductDataController.shared.products[indexPath.row]
-            cell.productItem = productItem
+
+            // setup
+            cell.configure(row: indexPath.row, model: productItem)
         }
 
         // check for pre-fetch
@@ -225,7 +219,7 @@ class ProductItemTableViewCell: UITableViewCell {
     // properties
     ///////////////////////////////////////////////////////////
 
-    var productItem: ProductItem? = nil {
+    private var productItem: ProductItem? = nil {
 
         didSet {
 
@@ -276,9 +270,12 @@ class ProductItemTableViewCell: UITableViewCell {
     // actions
     ///////////////////////////////////////////////////////////
 
-    func configure(row: Int) {
+    func configure(row: Int, model: ProductItem) {
 
         // any one-time configuration outside of data model being set
         productImageView.tag = row
+
+        // save model
+        self.productItem = model
     }
 }
