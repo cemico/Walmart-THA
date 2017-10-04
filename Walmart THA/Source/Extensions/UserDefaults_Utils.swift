@@ -18,7 +18,8 @@ extension UserDefaults {
 
         struct Keys {
 
-            static let currentFileID = "currentFileID"
+            static let currentImageFileID   = "currentImageFileID"
+            static let currentProductFileID = "currentProductFileID"
         }
 
         struct Defaults {
@@ -27,15 +28,35 @@ extension UserDefaults {
         }
     }
 
-    var nextFileID: Int {
+    var nextImageFileID: Int {
 
         // default
-        var nextID = Constants.Defaults.fileIDSeed
+        let defaultValue = Constants.Defaults.fileIDSeed
 
         // check if saved value exists
-        let key = Constants.Keys.currentFileID
+        let key = Constants.Keys.currentImageFileID
 
-        // return 0 if not found
+        return nextFileID(key: key, defaultValue: defaultValue)
+    }
+
+    var nextProductFileID: Int {
+
+        // default
+        let defaultValue = Constants.Defaults.fileIDSeed
+
+        // check if saved value exists
+        let key = Constants.Keys.currentProductFileID
+
+        return nextFileID(key: key, defaultValue: defaultValue)
+    }
+
+    private func nextFileID(key: String, defaultValue: Int) -> Int {
+
+        // default
+        var nextID = defaultValue
+
+        // check if saved value exists
+        // returns 0 if not found
         let currentValue = self.integer(forKey: key)
         if currentValue > 0 {
 

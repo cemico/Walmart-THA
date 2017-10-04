@@ -103,7 +103,7 @@ class CacheManager {
 
         // update
         let prefix = Constants.imageFilenamePrefix
-        let fileID = UserDefaults.standard.nextFileID
+        let fileID = UserDefaults.standard.nextImageFileID
         let ext = url.ext
         let filename = "\(prefix)-\(fileID).\(ext)"
 

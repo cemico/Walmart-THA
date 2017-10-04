@@ -38,6 +38,7 @@
 		AABA6FAC1F83A3AF0047958D /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA6FAB1F83A3AF0047958D /* CacheManager.swift */; };
 		AABA6FAE1F83A5BB0047958D /* FileManager_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA6FAD1F83A5BB0047958D /* FileManager_Utils.swift */; };
 		AABA6FB31F8425F70047958D /* UserDefaults_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA6FB21F8425F70047958D /* UserDefaults_Utils.swift */; };
+		AABA6FB51F843F590047958D /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABA6FB41F843F590047958D /* SoundManager.swift */; };
 		AAFFC4391F81F1E9001CECF8 /* ProductsFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFFC4381F81F1E9001CECF8 /* ProductsFetch.swift */; };
 		AAFFC43B1F8209F0001CECF8 /* Bundle_Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFFC43A1F8209F0001CECF8 /* Bundle_Utils.swift */; };
 		AAFFC43E1F820B91001CECF8 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFFC43D1F820B91001CECF8 /* Router.swift */; };
@@ -100,6 +101,7 @@
 		AABA6FAB1F83A3AF0047958D /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		AABA6FAD1F83A5BB0047958D /* FileManager_Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManager_Utils.swift; sourceTree = "<group>"; };
 		AABA6FB21F8425F70047958D /* UserDefaults_Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults_Utils.swift; sourceTree = "<group>"; };
+		AABA6FB41F843F590047958D /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
 		AAFFC4381F81F1E9001CECF8 /* ProductsFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsFetch.swift; sourceTree = "<group>"; };
 		AAFFC43A1F8209F0001CECF8 /* Bundle_Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle_Utils.swift; sourceTree = "<group>"; };
 		AAFFC43D1F820B91001CECF8 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
@@ -262,6 +264,7 @@
 				AA9D03EF1F81CB94001434A2 /* AppDataController.swift */,
 				AABA6FAB1F83A3AF0047958D /* CacheManager.swift */,
 				AA9D03F11F81CC3F001434A2 /* ProductDataController.swift */,
+				AABA6FB41F843F590047958D /* SoundManager.swift */,
 			);
 			path = Singletons;
 			sourceTree = "<group>";
@@ -490,6 +493,7 @@
 				AA9D03911F81A4CC001434A2 /* DetailViewController.swift in Sources */,
 				AAFFC4391F81F1E9001CECF8 /* ProductsFetch.swift in Sources */,
 				AABA6FB31F8425F70047958D /* UserDefaults_Utils.swift in Sources */,
+				AABA6FB51F843F590047958D /* SoundManager.swift in Sources */,
 				AAFFC43B1F8209F0001CECF8 /* Bundle_Utils.swift in Sources */,
 				AABA6FAE1F83A5BB0047958D /* FileManager_Utils.swift in Sources */,
 				AAFFC4421F82EA6E001CECF8 /* UITableView_Utils.swift in Sources */,

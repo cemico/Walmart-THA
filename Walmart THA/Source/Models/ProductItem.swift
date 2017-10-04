@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ProductItem: Codable, CustomStringConvertible {
+class ProductItem: Codable, CustomStringConvertible, Equatable {
 
     ///////////////////////////////////////////////////////////
     // enums
@@ -64,5 +64,36 @@ class ProductItem: Codable, CustomStringConvertible {
 
         return _longDescription ?? ""
     }
+
+    ///////////////////////////////////////////////////////////
+    // equality helper
+    ///////////////////////////////////////////////////////////
+
+    func equalTo(_ selfTest: ProductItem) -> Bool {
+
+        // object check, i.e. same physical object
+        guard self !== selfTest else { return true }
+
+        // property level equality check
+        return  self.id                 == selfTest.id                  &&
+                self.name               == selfTest.name                &&
+                self.price              == selfTest.price               &&
+                self.imageUrl           == selfTest.imageUrl            &&
+                self.price              == selfTest.price               &&
+                self.reviewRating       == selfTest.reviewRating        &&
+                self.reviewCount        == selfTest.reviewCount         &&
+                self.inStock            == selfTest.inStock             &&
+                self._shortDescription  == selfTest._shortDescription   &&
+                self._longDescription   == selfTest._longDescription
+    }
 }
 
+///////////////////////////////////////////////////////////
+// global level protocol conformance
+///////////////////////////////////////////////////////////
+
+func ==(lhs: ProductItem, rhs: ProductItem) -> Bool {
+
+    // call into class so class so any potential heirarchy is maintained
+    return lhs.equalTo(rhs)
+}

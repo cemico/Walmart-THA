@@ -34,6 +34,11 @@ class ProductDataController {
     // server supplied total
     private var _lastProductsFetched: ProductsFetch? = nil
 
+    // prevent duplicate fetches - track fetch responses
+    // note: used hash for faster lookup, Bool can be
+    //       set "false" to re-fecth same block if desired
+    private var _requestedFetches: [String : Bool] = [:]
+
     ///////////////////////////////////////////////////////////
     // lifecycle
     ///////////////////////////////////////////////////////////
@@ -100,6 +105,34 @@ class ProductDataController {
 
         // pickup where we last left off
         let pageNumber = 1 + products.count
+
+        // single thread access
+        var isDupRequest = false
+        NSLock().synchronized { [unowned self] in
+
+            // make sure we are not already fetching this request
+            let fetchKey = "\(pageNumber)"
+            if let previousFetched = self._requestedFetches[fetchKey] {
+
+                // previous exists
+                isDupRequest = previousFetched
+            }
+            else {
+
+                // save this fetch request
+                self._requestedFetches[fetchKey] = true
+            }
+        }
+
+        // previous fetch occurred, see if been set to re-fetch, i.e. set to false
+        guard !isDupRequest else {
+
+            // already flagged as fetched
+            completionHandler(nil, [])
+            return
+        }
+
+        // setup server parameters
         let parameters = [ Router.Constants.Api.Keys.getPartialProductList.start : pageNumber ]
 
         // make server request

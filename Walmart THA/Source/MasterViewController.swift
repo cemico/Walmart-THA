@@ -10,6 +10,16 @@ import UIKit
 
 class MasterViewController: UITableViewController {
 
+    private struct Constants {
+
+        // don't wait until hit bottom before fetching more,
+        // instead kick off the lazy loading operation as
+        // we begin to sneak up on the last cell ... here
+        // we configure the number of cells before the
+        // last to start the next data fetch
+        static let preCellThresholdToFetchMore = 5
+    }
+
     var detailViewController: DetailViewController? = nil
 
 
@@ -68,6 +78,21 @@ class MasterViewController: UITableViewController {
         })
     }
 
+    func prefetchCheckFrom(indexPath: IndexPath) {
+
+        // see if getting close to end of data, adjust for zero-base
+        let numberOfProducts = max(0, ProductDataController.shared.products.count - 1)
+        let numberOfRowsBeforeEnd = numberOfProducts - indexPath.row
+        let shouldFetchMore = (numberOfRowsBeforeEnd <= Constants.preCellThresholdToFetchMore)
+
+        if shouldFetchMore {
+
+            // initiate early fetch
+            print("fetching request from row: \(indexPath.row) of \(numberOfProducts) products")
+            fetchMoreResults()
+        }
+    }
+
     func fetchMoreResults() {
 
         // check if more results available to fetch
@@ -93,6 +118,7 @@ class MasterViewController: UITableViewController {
 
                         if isFirstFetch {
 
+                            // cool factor, how about animating in first set of items
                             strongSelf.tableView.reloadData(with: .fromBottom)
                         }
                         else {
@@ -109,10 +135,16 @@ class MasterViewController: UITableViewController {
 
                             // new rows are not visible, no need to animate
                             strongSelf.tableView.reloadData()
-                            strongSelf.scrollUpAfterFetch()
+
+//                            // playing around with feedback animation
+//                            strongSelf.scrollUpAfterFetch()
                         }
 
+                        // visual feedback
                         strongSelf.navigationItem.title = "Products (\(ProductDataController.shared.products.count))"
+
+                        // haptic feedback
+                        SoundManager.shared.hapticFeedback(type: .notification(.success))
                     }
                 }
             }
@@ -159,6 +191,10 @@ class MasterViewController: UITableViewController {
         // get model data
         let productItem = ProductDataController.shared.products[indexPath.row]
         cell.textLabel!.text = "\(indexPath.row + 1): " + productItem.name
+
+        // check for pre-fetch
+        prefetchCheckFrom(indexPath: indexPath)
+
         return cell
     }
 }
