@@ -29,7 +29,16 @@ class DetailViewController: UIViewController {
     // data members
     ///////////////////////////////////////////////////////////
 
-    var productItem: ProductItem? = nil
+    var productItem: ProductItem? = nil {
+
+        didSet {
+
+            if productItem != nil {
+
+                self.tableView?.reloadData()
+            }
+        }
+    }
 
     ///////////////////////////////////////////////////////////
     // overrides
@@ -54,6 +63,16 @@ class DetailViewController: UIViewController {
 
         // model up vc
         vc.productItem = productItem
+    }
+
+    ///////////////////////////////////////////////////////////
+    // helpers
+    ///////////////////////////////////////////////////////////
+
+    func displayModeUpdated() {
+
+        // update dynamic content
+        tableView?.reloadData()
     }
 }
 

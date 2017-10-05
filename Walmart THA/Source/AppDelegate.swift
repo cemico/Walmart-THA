@@ -21,6 +21,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
         splitViewController.delegate = self
 
+        // regular traits have master shown initially
+        if UIDevice.current.userInterfaceIdiom == .pad {
+
+            splitViewController.preferredDisplayMode = .allVisible
+        }
+        else {
+
+            splitViewController.preferredDisplayMode = .automatic
+        }
+
         // cache handling
         AppDataController.shared.loadCache()
 

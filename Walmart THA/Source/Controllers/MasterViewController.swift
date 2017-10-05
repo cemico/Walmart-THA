@@ -23,6 +23,8 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
         // we configure the number of cells before the
         // last to start the next data fetch
         static let preCellThresholdToFetchMore = 5
+
+        static let detailSegue = "showDetail"
     }
 
     ///////////////////////////////////////////////////////////
@@ -38,6 +40,9 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
 
     // details pane
     private var detailViewController: DetailViewController? = nil
+
+    // optimize master detail coordination
+    private var collapseDetailViewController = true
 
     // loading indicator
     private var isLoadingData = false
@@ -68,12 +73,6 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
         // grab inital data
         fetchMoreResults()
 
-//        // Do any additional setup after loading the view, typically from a nib.
-//        navigationItem.leftBarButtonItem = editButtonItem
-//
-//        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
-//        navigationItem.rightBarButtonItem = addButton
-
         // extract details controller
         if let split = splitViewController {
 
@@ -82,15 +81,62 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
         }
 
         // setup search bar
-        // note: didn't complete, mostly works ... commented out
-//        self.tableView.tableHeaderView = searchController.searchBar
+        // note: few boundary conditions needs to be cleaned up
+        self.tableView.tableHeaderView = searchController.searchBar
     }
 
     override func viewWillAppear(_ animated: Bool) {
 
+//        // track display mode changes
+//        splitViewController?.delegate = self
+
         // clear previous selection
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
+    }
+
+    func setDetailOnEntry() {
+
+        let isPadAndPlusLandscape = UIScreen.main.traitCollection.horizontalSizeClass == .regular
+        let isPad = (UIDevice.current.userInterfaceIdiom == .pad)
+        let setDefaultSelectedRow = (isPad || isPadAndPlusLandscape)
+
+        // handle iPhone + models and iPad on entry
+        if setDefaultSelectedRow, let dvc = detailViewController {
+
+            if filteredData.count > 0, dvc.productItem == nil {
+
+                var indexPath = IndexPath.init(row: 0, section: 0)
+
+                if let firstVisible = tableView.indexPathsForVisibleRows?.first {
+
+                    indexPath = firstVisible
+
+                    // first cell is obscured under the nav bar, get 2nd one if exists
+                    if tableView.contentOffset.y > 0,
+                        let visiblePaths = tableView.indexPathsForVisibleRows,
+                        visiblePaths.count > 1 {
+
+                        indexPath = visiblePaths[1]
+                    }
+                }
+
+                // need selected row to determine model for segue
+                tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+                self.performSegue(withIdentifier: Constants.detailSegue, sender: nil)
+            }
+        }
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate(alongsideTransition: { _ in
+
+        }) { context in
+
+            self.setDetailOnEntry()
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -103,7 +149,7 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 
         // destination segue id
-        if segue.identifier == "showDetail" {
+        if segue.identifier == Constants.detailSegue {
 
             // need selected row
             if let indexPath = tableView.indexPathForSelectedRow {
@@ -277,6 +323,12 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
 
                         if isFirstFetch {
 
+                            // handle details initial state
+                            strongSelf.setDetailOnEntry()
+
+//                            // set initial details model in case of landscape
+//                            strongSelf.detailViewController?.productItem = strongSelf.filteredData.first
+
                             // cool factor, how about animating in first set of items
                             strongSelf.tableView.reloadData(with: .fromBottom) {
 
@@ -287,21 +339,21 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
                         }
                         else {
 
-                            //                            // animate the additions
-                            //                            let beginningIndex = max(0, ProductDataController.shared.products.count - products.count - 1)
-                            //                            strongSelf.tableView.beginUpdates()
-                            //                            for (index, _) in products.enumerated() {
-                            //
-                            //                                let indexPath = IndexPath.init(row: index + beginningIndex, section: 0)
-                            //                                strongSelf.tableView.insertRows(at: [indexPath], with: .left)
-                            //                            }
-                            //                            strongSelf.tableView.endUpdates()
+//                            // animate the additions
+//                            let beginningIndex = max(0, ProductDataController.shared.products.count - products.count - 1)
+//                            strongSelf.tableView.beginUpdates()
+//                            for (index, _) in products.enumerated() {
+//
+//                                let indexPath = IndexPath.init(row: index + beginningIndex, section: 0)
+//                                strongSelf.tableView.insertRows(at: [indexPath], with: .left)
+//                            }
+//                            strongSelf.tableView.endUpdates()
 
                             // new rows are not visible, no need to animate
                             strongSelf.tableView.reloadData()
 
-                            //                            // playing around with feedback animation
-                            //                            strongSelf.scrollUpAfterFetch()
+//                            // playing around with feedback animation
+//                            strongSelf.scrollUpAfterFetch()
                         }
                     }
 
@@ -338,6 +390,21 @@ class MasterViewController: UITableViewController, UISearchResultsUpdating {
     }
 }
 
+extension MasterViewController: UISplitViewControllerDelegate {
+
+    func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewControllerDisplayMode) {
+
+        // mode changed - update dynamic content
+        detailViewController?.displayModeUpdated()
+    }
+
+    
+    func splitViewController(splitViewController: UISplitViewController, collapseSecondaryViewController secondaryViewController: UIViewController, ontoPrimaryViewController primaryViewController: UIViewController) -> Bool {
+
+        return collapseDetailViewController
+    }
+}
+
 extension MasterViewController {
 
     ///////////////////////////////////////////////////////////
@@ -367,6 +434,11 @@ extension MasterViewController {
         prefetchCheckFrom(indexPath: indexPath)
 
         return cell
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
+        collapseDetailViewController = false
     }
 }
 
