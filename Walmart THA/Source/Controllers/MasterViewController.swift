@@ -457,6 +457,7 @@ class ProductItemTableViewCell: UITableViewCell {
     @IBOutlet weak var productPrice: UILabel!
     @IBOutlet weak var ratingStarsView: RatingStarsView!
     @IBOutlet weak var numberRatingsLabel: UILabel!
+    @IBOutlet weak var itemNumberLabel: UILabel!
 
     ///////////////////////////////////////////////////////////
     // properties
@@ -517,6 +518,7 @@ class ProductItemTableViewCell: UITableViewCell {
 
         // any one-time configuration outside of data model being set
         productImageView.tag = row
+        itemNumberLabel.text = "\(row + 1)"
 
         // save model
         self.productItem = model
